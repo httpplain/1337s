@@ -1,20 +1,17 @@
-# You can change the base image to any other image you want.
-FROM catub/core:bullseye
+FROM ubuntu:20.04
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
 
-# Install packages and set locale
 RUN apt-get update \
-    && apt-get install -y locales nano ssh sudo python3 curl wget \
+    && apt-get install -y locales nano ssh sudo python3 curl wget zip unzip \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
 
-# Configure SSH tunnel using ngrok
-ENV DEBIAN_FRONTEND=noninteractive \
+ENV UBUNTU_FRONTEND=noninteractive \
     LANG=en_US.utf8
-
-RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip \
+    
+RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip \
     && unzip ngrok.zip \
     && rm /ngrok.zip \
     && mkdir /run/sshd \
@@ -27,5 +24,9 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 /docker.sh
 
+# Add watch script to keep the session active
+RUN echo '#!/bin/bash\nwhile true; do echo "PWD is still active" ; sleep 24h; done' > /watch.sh \
+    && chmod +x /watch.sh
+
 EXPOSE 80 8888 8080 443 5130-5135 3306 7860
-CMD ["/bin/bash", "/docker.sh"]
+CMD ["/bin/bash", "-c", "/docker.sh & /watch.sh"]
