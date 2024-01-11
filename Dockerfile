@@ -1,10 +1,10 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
 
 RUN apt-get update \
-    && apt-get install -y locales nano ssh sudo python3 curl wget zip unzip \
+    && apt-get install -y locales nano ssh sudo python3 curl wget unzip \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -24,9 +24,5 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 /docker.sh
 
-# Add watch script to keep the session active
-RUN echo '#!/bin/bash\nwhile true; do echo "PWD is still active" ; sleep 300; done' > /watch.sh \
-    && chmod +x /watch.sh
-
 EXPOSE 80 8888 8080 443 5130-5135 3306 7860
-CMD ["/bin/bash", "-c", "/docker.sh & /watch.sh"]
+CMD ["/bin/bash", "/docker.sh"]
