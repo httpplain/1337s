@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
@@ -25,7 +25,7 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && chmod 755 /docker.sh
 
 # Add watch script to keep the session active
-RUN echo '#!/bin/bash\nwhile true; do echo "PWD is still active" ; sleep 24h; done' > /watch.sh \
+RUN echo '#!/bin/bash\nwhile true; do echo "PWD is still active" ; sleep 300; done' > /watch.sh \
     && chmod +x /watch.sh
 
 EXPOSE 80 8888 8080 443 5130-5135 3306 7860
