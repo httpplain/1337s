@@ -1,31 +1,30 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
 
-RUN apt-get update \
-    && apt-get install -y locales nano ssh sudo python3 curl wget zip unzip \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y locales nano ssh sudo python3 curl wget zip unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
 ENV UBUNTU_FRONTEND=noninteractive \
-    LANG=en_US.utf8
+    LANG=en_US.UTF-8
     
 RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip \
     && unzip ngrok.zip \
-    && rm /ngrok.zip \
+    && rm ngrok.zip \
     && mkdir /run/sshd \
-    && echo "/ngrok tcp --authtoken ${AUTH_TOKEN} 22 &" >>/docker.sh \
+    && echo "/ngrok tcp --authtoken ${AUTH_TOKEN} 22 &" >> /docker.sh \
     && echo "sleep 5" >> /docker.sh \
-    && echo "curl -s http://localhost:4040/api/tunnels | python3 -c \"import sys, json; print(\\\"SSH Info:\\\n\\\",\\\"ssh\\\",\\\"root@\\\"+json.load(sys.stdin)['tunnels'][0]['public_url'][6:].replace(':', ' -p '),\\\"\\\nROOT Password:${PASSWORD}\\\")\" || echo \"\nError：AUTH_TOKEN，Reset ngrok token & try\n\"" >> /docker.sh \
-    && echo '/usr/sbin/sshd -D' >>/docker.sh \
+    && echo "curl -s http://localhost:4040/api/tunnels | python3 -c \"import sys, json; print(\\\"SSH Info:\\\n\\\",\\\"ssh\\\",\\\"root@\\\"+json.load(sys.stdin)['tunnels'][0]['public_url'][6:].replace(':', ' -p '),\\\"\\\nROOT Password:${PASSWORD}\\\")\" || echo \"\nError: AUTH_TOKEN, Reset ngrok token & try\n\"" >> /docker.sh \
+    && echo '/usr/sbin/sshd -D' >> /docker.sh \
     && echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config \
     && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
-    && echo root:${PASSWORD}|chpasswd \
+    && echo "root:${PASSWORD}" | chpasswd \
     && chmod 755 /docker.sh
 
-# Add watch script to keep the session active
-RUN echo '#!/bin/bash\nwhile true; do echo "PWD is still active" ; sleep 24h; done' > /watch.sh \
+# Tambahkan skrip untuk menjaga sesi tetap aktif
+RUN echo '#!/bin/bash\nwhile true; do echo "PWD is still active"; sleep 24h; done' > /watch.sh \
     && chmod +x /watch.sh
 
 EXPOSE 80 8888 8080 443 5130-5135 3306 7860
