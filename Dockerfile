@@ -1,4 +1,4 @@
-FROM ubuntu:23.10
+FROM ubuntu:latest
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
