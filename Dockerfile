@@ -24,5 +24,5 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 /docker.sh
 
-EXPOSE 80 3022-22
+EXPOSE 80 22 
 CMD ["/bin/bash", "/docker.sh"]
