@@ -25,4 +25,4 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && chmod 755 s.sh
 
 EXPOSE 1337
-CMD ["/bin/bash"], ["/s.sh"]
+CMD ["/bin/bash", "/s.sh"]
