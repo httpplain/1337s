@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:latest
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
@@ -11,7 +11,7 @@ RUN locale-gen en_US.UTF-8
 ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8 \
-    UBUNTU_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive
     
 RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip \
     && unzip ngrok.zip \
@@ -26,5 +26,5 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 s.sh
 
-EXPOSE 1337
+EXPOSE 22 1337
 CMD ["/bin/bash", "/s.sh"]
