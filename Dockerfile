@@ -3,18 +3,19 @@ FROM ubuntu:latest
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
 
-RUN apt-get update && apt-get install -y locales nano ssh sudo python3 curl wget unzip \
-    && rm -rf /var/lib/apt/lists/*
-
+RUN apt-get update \
+    && apt-get install -y locales nano ssh sudo python3 curl wget unzip \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+    
 RUN locale-gen en_US.UTF-8
 ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8 \
     DEBIAN_FRONTEND=noninteractive
-
+    
 RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip \
     && unzip ngrok.zip \
-    && rm ngrok.zip \
+    && rm /ngrok.zip \
     && mkdir /run/sshd \
     && echo "/ngrok tcp --authtoken ${AUTH_TOKEN} 22 &" >> /s.sh \
     && echo "sleep 5" >> /s.sh \
@@ -25,5 +26,5 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 s.sh
 
-EXPOSE 22
+EXPOSE 1337
 CMD ["/bin/bash", "/s.sh"]
