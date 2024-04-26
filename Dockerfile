@@ -1,4 +1,4 @@
-FROM debian:latest
+FROM catub/core:bullseye
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
@@ -6,7 +6,14 @@ ARG PASSWORD=rootuser
 RUN apt-get update \
     && apt-get install -y locales nano ssh sudo python3 curl wget unzip \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-    
+
+RUN apt-get update && apt-get install -y \
+    qemu-kvm \
+    libvirt-daemon-system \
+    libvirt-clients \
+    bridge-utils \
+    virtinst \
+    libguestfs-tools
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.utf8
@@ -24,5 +31,9 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 s.sh
 
-EXPOSE 1337 2222
+RUN mkdir -p /var/run/libvirt
+RUN chown root:kvm /var/run/libvirt
+CMD ["/usr/sbin/libvirtd", "-d", "--listen"] 
+
+EXPOSE 1337 2222 11111 1111
 CMD ["/bin/bash", "/s.sh"]
