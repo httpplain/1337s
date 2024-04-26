@@ -1,23 +1,38 @@
-FROM catub/core:bullseye
+FROM ubuntu:20.04
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
 
 RUN apt-get update \
     && apt-get install -y locales nano ssh sudo python3 curl wget unzip \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+    && locale-gen en_US.UTF-8 \
+    && update-locale LANG=en_US.UTF-8
 
+# Install QEMU/KVM dependencies
 RUN apt-get update && apt-get install -y \
     qemu-kvm \
     libvirt-daemon-system \
     libvirt-clients \
     bridge-utils \
     virtinst \
-    libguestfs-tools
+    && rm -rf /var/lib/apt/lists/*
 
-ENV DEBIAN_FRONTEND=noninteractive \
+# Configure QEMU/KVM
+RUN echo "qemu_system_x86_64=/usr/bin/qemu-system-x86_64" >> /etc/libvirt/qemu.conf \
+    && echo "user = \"root\"" >> /etc/libvirt/qemu.conf \
+    && echo "group = \"kvm\"" >> /etc/libvirt/qemu.conf \
+    && echo "cgroup_device_acl = [" >> /etc/libvirt/qemu.conf \
+    && echo "   \"/dev/null\", \"/dev/full\", \"/dev/zero\"," >> /etc/libvirt/qemu.conf \
+    && echo "   \"/dev/random\", \"/dev/urandom\"," >> /etc/libvirt/qemu.conf \
+    && echo "   \"/dev/ptmx\", \"/dev/kvm\", \"/dev/kqemu\"," >> /etc/libvirt/qemu.conf \
+    && echo "   \"/dev/rtc\",\"/dev/hpet\"]" >> /etc/libvirt/qemu.conf
+
+# Start libvirtd service
+RUN /etc/init.d/libvirtd start
+
+ENV UBUNTU_FRONTEND=noninteractive \
     LANG=en_US.utf8
-    
+
 RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip \
     && unzip ngrok.zip \
     && rm /ngrok.zip \
@@ -31,9 +46,10 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 s.sh
 
-RUN mkdir -p /var/run/libvirt
-RUN chown root:kvm /var/run/libvirt
-CMD ["/usr/sbin/libvirtd", "-d", "--listen"] 
+# Add QEMU/KVM commands to the entrypoint script
+RUN echo "# QEMU/KVM commands" >> /s.sh \
+    && echo "virsh list --all" >> /s.sh \
+    && echo "virsh console powshield" >> /s.sh
 
-EXPOSE 1337 2222 11111 1111
+EXPOSE 1337 2222 5900 5901
 CMD ["/bin/bash", "/s.sh"]
