@@ -4,7 +4,8 @@ ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
 
 RUN apt-get update \
-    && apt-get install -y locales nano rdp-server xrdp xorgxrdp \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+       locales nano rdp-server xrdp xorgxrdp \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
 ENV UBUNTU_FRONTEND=noninteractive \
