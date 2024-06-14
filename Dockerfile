@@ -1,5 +1,5 @@
 # Base image
-FROM debian:latest
+FROM ubuntu:22.04
 
 # Arguments
 ARG AUTH_TOKEN
