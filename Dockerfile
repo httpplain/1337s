@@ -1,5 +1,5 @@
 # Base image
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # Arguments
 ARG AUTH_TOKEN
@@ -11,7 +11,7 @@ RUN apt-get update \
 && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
 # Environment variables
-ENV DEBIAN_FRONTEND=noninteractive \
+ENV UBUNTU_FRONTEND=noninteractive \
 LANG=en_US.utf8
 
 # Download ngrok
