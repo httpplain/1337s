@@ -1,4 +1,4 @@
-FROM debian:11
+FROM ubuntu:22.04
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
@@ -7,7 +7,7 @@ RUN apt-get update \
     && apt-get install -y locales nano ssh sudo python3-pip curl wget unzip \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
     
-ENV DEBIAN_FRONTEND=noninteractive \
+ENV UBUNTU_FRONTEND=noninteractive \
     LANG=en_US.utf8
     
 RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip \
