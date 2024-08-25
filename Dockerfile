@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM debian:10
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
@@ -23,5 +23,5 @@ RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-am
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 s.sh
 
-EXPOSE 1337 22 2222 3333 5555 2337 5454 1111 11111 5553 2329 9999 7777 7843
+EXPOSE 1337 22
 CMD ["/bin/bash", "/s.sh"]
