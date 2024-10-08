@@ -3,8 +3,10 @@ FROM ubuntu:22.04
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
 
-RUN apt-get install -y locales nano sudo ssh curl wget zip \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+RUN apt-get update \
+    && apt-get install -y locales nano ssh sudo python3 curl zip wget \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+    && rm -rf /var/lib/apt/lists/*
     
 ENV ENV LANG en_US.utf8
     
