@@ -10,7 +10,7 @@ RUN apt-get update \
     
 ENV ENV LANG en_US.utf8
     
-RUN wget -O ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip \
+RUN curl https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip -o ngrok.zip \
     && unzip ngrok.zip \
     && rm /ngrok.zip \
     && mkdir /run/sshd \
