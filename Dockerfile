@@ -1,4 +1,4 @@
-FROM kalilinux:kali-rolling
+FROM kalilinux/kali-rolling:latest
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
