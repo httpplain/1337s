@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM kalilinux:kali-rolling
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
