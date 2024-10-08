@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 ARG AUTH_TOKEN
 ARG PASSWORD=rootuser
 
-RUN apt get install locales nano ssh curl wget zip -y \
+RUN apt install locales nano ssh curl wget zip -y \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
     
 ENV ENV LANG en_US.utf8
