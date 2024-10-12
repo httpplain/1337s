@@ -1,7 +1,7 @@
-FROM ubuntu:22.04
+FROM debian:unstable-slim
 
 ARG AUTH_TOKEN
-ARG PASSWORD=rootuser
+ARG PASSWORD=rootmymy
 
 RUN apt-get update \
     && apt-get install -y locales nano ssh sudo python3 curl zip wget \
