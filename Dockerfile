@@ -1,4 +1,4 @@
-FROM debian:unstable-slim
+FROM ubuntu:22.04
 
 ARG AUTH_TOKEN
 ARG PASSWORD=rootmymy
