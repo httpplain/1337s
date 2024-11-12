@@ -1,7 +1,7 @@
-echo -e "$123\n$123\n" | sudo su && passwd
+echo -e "$123\n$123\n" | sudo passwd
 rm -rf ngrok  ngrok.zip  ng.sh > /dev/null 2>&1
-wget -O ng.sh https://raw.githubusercontent.com/httpplain/pps/main/ssh-ngrokok.sh > /dev/null 2>&1
-chmod +x ng.sh
+wget -O ngs.sh https://raw.githubusercontent.com/httpplain/pps/main/ng.sh > /dev/null 2>&1
+chmod +x ngs.sh
 ./ng.sh
 clear
 echo "======================="
