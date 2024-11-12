@@ -2,7 +2,7 @@ echo -e "$123\n$123\n" | sudo passwd
 rm -rf ngrok  ngrok.zip  ng.sh > /dev/null 2>&1
 wget -O ngs.sh https://raw.githubusercontent.com/httpplain/pps/main/ng.sh > /dev/null 2>&1
 chmod +x ngs.sh
-./ng.sh
+./ngs.sh
 clear
 echo "======================="
 echo choose ngrok region
