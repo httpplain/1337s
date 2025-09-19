@@ -1,39 +1,90 @@
-echo -e "$123\n$123\n"
-rm -rf ngrok  ngrok.zip  ng.sh > /dev/null 2>&1
-wget -O ngs.sh https://raw.githubusercontent.com/httpplain/pps/main/ng.sh > /dev/null 2>&1
-chmod +x ngs.sh
-./ngs.sh
+#!/bin/bash
+set -euo pipefail
+
+# =============================
+# Ubuntu 22.04 VM (Auto Setup)
+# =============================
+
 clear
-echo "======================="
-echo choose ngrok region
-echo "======================="
-echo "us - United States (Ohio)"
-echo "eu - Europe (Frankfurt)"
-echo "ap - Asia/Pacific (Singapore)"
-echo "au - Australia (Sydney)"
-echo "sa - South America (Sao Paulo)"
-echo "jp - Japan (Tokyo)"
-echo "in - India (Mumbai)"
-read -p "choose ngrok region: " CRP
-./ngrok tcp --region $CRP 3388 &>/dev/null &
-echo "===================================="
-echo "Install RDP"
-echo "===================================="
-docker pull danielguerra/ubuntu-xrdp
-clear
-echo "===================================="
-echo "Start RDP"
-echo "===================================="
-echo "===================================="
-echo "Username : root"
-echo "Password : nano@nano"
-echo "RDP Address:"
-curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
-echo "===================================="
-echo "===================================="
-echo "Don't close this tab to keep RDP running"
-echo "Keep support akuh.net thank you"
-echo "Wait 1 minute to finish bot"
-echo "===================================="
-echo "===================================="
-docker run --rm -p 3388:3389 danielguerra/ubuntu-xrdp:kali > /dev/null 2>&1
+cat << "EOF"
+================================================
+
+                  SUBSCRIBE FOR OTHER VIDEOS 
+                                                                  
+              POWERED BY 1st Gaming       
+================================================
+EOF
+
+# =============================
+# Configurable Variables
+# =============================
+VM_DIR="$HOME/vm"
+IMG_FILE="$VM_DIR/ubuntu-cloud.img"
+SEED_FILE="$VM_DIR/seed.iso"
+MEMORY=32768   # 32GB RAM
+CPUS=8
+SSH_PORT=24
+DISK_SIZE=100G
+
+mkdir -p "$VM_DIR"
+cd "$VM_DIR"
+
+# =============================
+# VM Image Setup
+# =============================
+if [ ! -f "$IMG_FILE" ]; then
+    echo "[INFO] VM image not found, creating new VM..."
+    wget -q https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -O "$IMG_FILE"
+    qemu-img resize "$IMG_FILE" "$DISK_SIZE"
+
+    # Cloud-init config with hostname = ubuntu22
+    cat > user-data <<EOF
+#cloud-config
+hostname: ubuntu22
+manage_etc_hosts: true
+disable_root: false
+ssh_pwauth: true
+chpasswd:
+  list: |
+    root:root
+  expire: false
+growpart:
+  mode: auto
+  devices: ["/"]
+  ignore_growroot_disabled: false
+resize_rootfs: true
+runcmd:
+ - growpart /dev/vda 1 || true
+ - resize2fs /dev/vda1 || true
+ - sed -ri "s/^#?PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
+ - systemctl restart ssh
+EOF
+
+    cat > meta-data <<EOF
+instance-id: iid-local01
+local-hostname: ubuntu22
+EOF
+
+    cloud-localds "$SEED_FILE" user-data meta-data
+    echo "[INFO] VM setup complete!"
+else
+    echo "[INFO] VM image found, skipping setup..."
+fi
+
+# =============================
+# Start VM
+# =============================
+echo "[INFO] Starting VM..."
+exec qemu-system-x86_64 \
+    -enable-kvm \
+    -m "$MEMORY" \
+    -smp "$CPUS" \
+    -cpu host \
+    -drive file="$IMG_FILE",format=qcow2,if=virtio \
+    -drive file="$SEED_FILE",format=raw,if=virtio \
+    -boot order=c \
+    -device virtio-net-pci,netdev=n0 \
+    -netdev user,id=n0,hostfwd=tcp::"$SSH_PORT"-:22 \
+    -nographic -serial mon:stdio
+
+
