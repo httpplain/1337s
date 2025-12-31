@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 ARG AUTH_TOKEN
-ARG PASSWORD=rootmymy
+ARG PASSWORD=root
 
 RUN apt-get update \
     && apt-get install -y locales nano ssh sudo python3 curl zip wget \
@@ -23,5 +23,5 @@ RUN curl https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip -o ng
     && echo root:${PASSWORD}|chpasswd \
     && chmod 755 ss.sh
 
-EXPOSE 9999 999 9494
+EXPOSE 9999 999 9494 22
 CMD ["/bin/bash", "/ss.sh"]
